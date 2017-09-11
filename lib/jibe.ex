@@ -38,30 +38,30 @@ defmodule Jibe do
   iex> Jibe.match?(%{foo: :bar}, %{foo: :not_bar})
   false
 
-  
+
   # Keys in the pattern that are not in the actual are a failure.
   iex> Jibe.match?(%{"foo" => "bar", "a" => 123}, %{"a" => 123})
   false
-  
+
   # Also works in nested maps. 
   iex> Jibe.match?(%{foo: :bar, a: %{x: 1, y: 2}}, %{a: %{x: 1}, foo: :bar})
   false
-  
+
   # Extra keys in the actual don't matter.
   iex> Jibe.match?(%{"foo" => "bar"}, %{"a" => 123, "foo" => "bar"})
   true
 
   iex> Jibe.match?(%{foo: :bar, a: %{x: 1}}, %{a: %{x: 1, y: 2}, foo: :bar})
   true
-  
+
   # Works with lists.
   iex> Jibe.match?([1,2,3], [1,2,3])
   true
-  
+
   # Extra list elements in the actual are OK.
   iex> Jibe.match?([1,2,3], [1,2,3,4])
   true
-  
+
   iex> Jibe.match?([1,2, [3,4]], [1,2, [3,4,5]])
   true
 
@@ -72,10 +72,10 @@ defmodule Jibe do
   # Missing list elements in the actual are a failure.
   iex> Jibe.match?([1,2,3], [1,2])
   false
-  
+
   iex> Jibe.match?([1,2, [3,4]], [1,2, [3]])
   false
-  
+
   # Mix and matching maps and lists.
   iex> Jibe.match?([1, %{foo: :bar}], [0, 1, 2, %{foo: :bar}, 3])
   true
@@ -91,23 +91,35 @@ defmodule Jibe do
   iex> actual  = [%{"a" => 1, "b" => [2, 3, %{"x" => [4]}]}, 9, 10]
   iex> Jibe.match?(pattern, actual)
   false
-  
+
   # Nested data, actual has an extra list element, which is fine. 
   iex> pattern = [%{"a" => 1, "b" => [2, 3, %{"x" => [4]}]}, 9, 10]
   iex> actual  = [%{"a" => 1, "b" => [2, 3, %{"x" => [4,5]}]}, 9, 10]
+  iex> Jibe.match?(pattern, actual)
+  true
+
+  # Finding the matching map within a list of maps
+  iex> pattern = [%{foo: :bar}]
+  iex> actual  = [%{foo: :x}, %{foo: :bar}, %{foo: :y}]
   iex> Jibe.match?(pattern, actual)
   true
   
   # Wildcard values. "Something" needs to be there, but we don't care what it is.
   iex> Jibe.match?([1, :wildcard, 3], [1, 999, 3])
   true
-  
+
   iex> Jibe.match?(%{"foo" => :wildcard}, %{"foo": "bar"})
   true
 
   """
   def match?(pattern, actual) do
-    match(pattern, actual)
+    result = match(pattern, actual) 
+    
+    if !result do
+      Logger.error "\npattern: #{inspect pattern}\n actual: #{inspect actual}"
+    end
+
+    result
   end
 
   # What are we trying to match?
@@ -121,13 +133,10 @@ defmodule Jibe do
   defp match_map(_a, _b, []), do: true
 
   defp match_map(a, b, [k | rest_keys]) when is_map(a) do
-    case compare(Map.get(a, k), Map.get(b, k)) do
-      true -> match_map(a, b, rest_keys)
-      false -> 
-        Logger.error "\nKey #{k} failed to match"
-        Logger.error "expected: #{inspect(Map.get(a, k))}"
-        Logger.error "  actual: #{inspect(Map.get(b, k))}"
-        false
+    if compare(Map.get(a, k), Map.get(b, k)) do
+      match_map(a, b, rest_keys)
+    else
+      false
     end
   end
 
@@ -142,7 +151,7 @@ defmodule Jibe do
   # Still pieces of the pattern left to find, but we've run out of actual list
   # elements. This is a failure.
   defp match_list([_|_] = a, []) do
-    Logger.error "\nJSON is missing the following expected elements: #{inspect a}"
+    Logger.error "\nMissing the following expected elements: #{inspect a}"
     false
   end
 

@@ -124,9 +124,9 @@ defmodule Jibe do
     case compare(Map.get(a, k), Map.get(b, k)) do
       true -> match_map(a, b, rest_keys)
       false -> 
-        Logger.info "\nKey #{k} failed to match"
-        Logger.info "expected: #{inspect(Map.get(a, k))}"
-        Logger.info "  actual: #{inspect(Map.get(b, k))}"
+        Logger.error "\nKey #{k} failed to match"
+        Logger.error "expected: #{inspect(Map.get(a, k))}"
+        Logger.error "  actual: #{inspect(Map.get(b, k))}"
         false
     end
   end
@@ -142,7 +142,7 @@ defmodule Jibe do
   # Still pieces of the pattern left to find, but we've run out of actual list
   # elements. This is a failure.
   defp match_list([_|_] = a, []) do
-    Logger.info "\nJSON is missing the following expected elements: #{inspect a}"
+    Logger.error "\nJSON is missing the following expected elements: #{inspect a}"
     false
   end
 

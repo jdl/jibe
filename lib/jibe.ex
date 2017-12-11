@@ -98,6 +98,12 @@ defmodule Jibe do
   iex> Jibe.match?(pattern, actual)
   true
 
+  # Nested data, actual map inside of a list has an extra element.
+  iex> pattern = [%{"a" => 1}, %{"a" => 2}]
+  iex> actual  = [%{"a" => 1, "x" => 9}, %{"y" => 9, "a" => 2}]
+  iex> Jibe.match?(pattern, actual)
+  true
+
   # Finding the matching map within a list of maps
   iex> pattern = [%{foo: :bar}]
   iex> actual  = [%{foo: :x}, %{foo: :bar}, %{foo: :y}]
@@ -108,7 +114,12 @@ defmodule Jibe do
   iex> Jibe.match?([1, :wildcard, 3], [1, 999, 3])
   true
 
-  iex> Jibe.match?(%{"foo" => :wildcard}, %{"foo": "bar"})
+  # :wildcard still needs the key to be present in a map.
+  iex> Jibe.match?(%{"foo" => :wildcard}, %{"x" => "bar"})
+  false
+
+  # :wildcard will match a nil value as long as the key is there. 
+  iex> Jibe.match?(%{"foo" => :wildcard}, %{"foo" => nil})
   true
 
   """
@@ -133,7 +144,7 @@ defmodule Jibe do
   defp match_map(_a, _b, []), do: true
 
   defp match_map(a, b, [k | rest_keys]) when is_map(a) do
-    if compare(Map.get(a, k), Map.get(b, k)) do
+    if compare(Map.get(a, k), Map.get(b, k, :key_missing)) do
       match_map(a, b, rest_keys)
     else
       false
@@ -167,6 +178,7 @@ defmodule Jibe do
 
   def compare(a, b) when is_map(a)  and is_map(b),  do: match(a, b)
   def compare(a, b) when is_list(a) and is_list(b), do: match(a, b)
+  def compare(:wildcard, :key_missing), do: false
   def compare(:wildcard, _b), do: true
   def compare(a, b), do: a == b
   

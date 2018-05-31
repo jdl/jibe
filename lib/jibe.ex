@@ -109,7 +109,7 @@ defmodule Jibe do
   iex> actual  = [%{foo: :x}, %{foo: :bar}, %{foo: :y}]
   iex> Jibe.match?(pattern, actual)
   true
-  
+
   # Wildcard values. "Something" needs to be there, but we don't care what it is.
   iex> Jibe.match?([1, :wildcard, 3], [1, 999, 3])
   true
@@ -122,6 +122,22 @@ defmodule Jibe do
   iex> Jibe.match?(%{"foo" => :wildcard}, %{"foo" => nil})
   true
 
+  # Elixir DateTime requires a special comparison
+  iex> {:ok, d1, _} = DateTime.from_iso8601("2018-01-01T12:00:00Z")
+  iex> {:ok, d2, _} = DateTime.from_iso8601("2000-01-01T12:00:00Z")
+  iex> Jibe.match?([d1], [d2])
+  false
+
+  iex> {:ok, d1, _} = DateTime.from_iso8601("2018-01-01T12:00:00Z")
+  iex> {:ok, d2, _} = DateTime.from_iso8601("2018-01-01T12:00:00.000000Z")
+  iex> Jibe.match?([d1], [d2])
+  true
+
+  iex> {:ok, d1, _} = DateTime.from_iso8601("2018-01-01T12:00:00Z")
+  iex> {:ok, d2, _} = DateTime.from_iso8601("2018-01-01T12:00:00.000000Z")
+  iex> Jibe.match?(%{d: d1}, %{d: d2})
+  true
+  
   """
   def match?(pattern, actual) do
     result = match(pattern, actual) 
@@ -175,6 +191,10 @@ defmodule Jibe do
       match_list(pattern, rest_b)
     end
   end
+
+  # patterns like this need to be first, because they are also considered maps
+  # by the is_map guard.
+  def compare(%DateTime{} = a, %DateTime{} = b), do: DateTime.compare(a, b) == :eq
 
   def compare(a, b) when is_map(a)  and is_map(b),  do: match(a, b)
   def compare(a, b) when is_list(a) and is_list(b), do: match(a, b)

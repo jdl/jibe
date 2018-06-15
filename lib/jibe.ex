@@ -197,7 +197,7 @@ defmodule Jibe do
 
   defp match_unsorted_list([], []), do: true
   defp match_unsorted_list([], [_|_]), do: true
-  defp match_unsorted_list([a | rest_a] = pattern, b) do
+  defp match_unsorted_list([a | rest_a], b) do
     case Enum.find_index(b, &(compare(a, &1))) do
       nil ->
         Logger.error("\nMissing the following expected element: #{inspect a}")

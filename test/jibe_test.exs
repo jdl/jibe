@@ -62,5 +62,13 @@ defmodule JibeTest do
         refute Jibe.match?(pattern, actual)
       end) =~ "Missing the following expected elements: [:y]"
     end
+
+    test "no match - looking for nested unsorted list, but actual is wront type" do
+      pattern = %{data: {:unsorted, [:a, :b]} }
+      actual  = %{data:             :not_a_list}
+      assert capture_log(fn ->
+        refute Jibe.match?(pattern, actual)
+       end) =~ "actual: %{data: :not_a_list}"
+    end
   end
 end

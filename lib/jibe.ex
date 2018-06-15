@@ -153,6 +153,9 @@ defmodule Jibe do
   defp match(a, b) when is_map(a), do: match_map(a, b, keys(a))
   defp match(a, b) when is_list(a), do: match_list(a, b)
 
+  # This is probably O(n^2). Use a sorted list if you care at all about performance.
+  defp match({:unsorted, a}, b) when is_list(a), do: match_unsorted_list(a, b)
+
 
   # For maps, we check each key-value in the pattern to see if there is a cooresponding
   # key-value in the actual. If a value doesn't match, then the test fails. If we run 
@@ -192,12 +195,25 @@ defmodule Jibe do
     end
   end
 
+  defp match_unsorted_list([], []), do: true
+  defp match_unsorted_list([], [_|_]), do: true
+  defp match_unsorted_list([a | rest_a] = pattern, b) do
+    case Enum.find_index(b, &(compare(a, &1))) do
+      nil ->
+        Logger.error("\nMissing the following expected element: #{inspect a}")
+        false
+      index ->
+        match_unsorted_list(rest_a, List.delete_at(b, index))
+    end
+  end
+
   # patterns like this need to be first, because they are also considered maps
   # by the is_map guard.
   def compare(%DateTime{} = a, %DateTime{} = b), do: DateTime.compare(a, b) == :eq
 
   def compare(a, b) when is_map(a)  and is_map(b),  do: match(a, b)
   def compare(a, b) when is_list(a) and is_list(b), do: match(a, b)
+  def compare({:unsorted, a}, b) when is_list(a) and is_list(b), do: match({:unsorted, a}, b)
   def compare(:wildcard, :key_missing), do: false
   def compare(:wildcard, _b), do: true
   def compare(a, b), do: a == b

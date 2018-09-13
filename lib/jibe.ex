@@ -137,6 +137,13 @@ defmodule Jibe do
   iex> {:ok, d2, _} = DateTime.from_iso8601("2018-01-01T12:00:00.000000Z")
   iex> Jibe.match?(%{d: d1}, %{d: d2})
   true
+
+  # Decimal values require a special comparison
+  iex> Jibe.match?([Decimal.new(2)], [Decimal.new(2.0)])
+  true
+
+  iex> Jibe.match?([Decimal.new(4)], [Decimal.new(4.5)])
+  false
   
   """
   def match?(pattern, actual) do
@@ -210,6 +217,7 @@ defmodule Jibe do
   # patterns like this need to be first, because they are also considered maps
   # by the is_map guard.
   def compare(%DateTime{} = a, %DateTime{} = b), do: DateTime.compare(a, b) == :eq
+  def compare(%Decimal{} = a, %Decimal{} = b), do: Decimal.cmp(a, b) == :eq
 
   def compare(a, b) when is_map(a)  and is_map(b),  do: match(a, b)
   def compare(a, b) when is_list(a) and is_list(b), do: match(a, b)

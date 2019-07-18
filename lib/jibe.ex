@@ -2,22 +2,22 @@ defmodule Jibe do
   require Logger
 
   @moduledoc """
-  Tools for checking if an arbitrarily nested map/list matches a particular pattern. 
+  Tools for checking if an arbitrarily nested map/list matches a particular pattern.
   The genesis of this was as a helper in unit tests to check if JSON was being generated as
-  expected. 
+  expected.
 
   This intentionally does require any particular JSON library, so if you want to use it with
-  JSON you'll have to use something like `Poison.decode/1` first. Note that these decode functions 
-  will usually build maps with strings for keys, as opposed to atoms, so set up your pattern 
-  accordingly. 
+  JSON you'll have to use something like `Poison.decode/1` first. Note that these decode functions
+  will usually build maps with strings for keys, as opposed to atoms, so set up your pattern
+  accordingly.
   """
 
   @doc """
-  Given a `pattern` and an `actual` map/list, determine if the actual matches 
+  Given a `pattern` and an `actual` map/list, determine if the actual matches
   the pattern.
 
   The pattern is "forgiving" in the sense that extra keys or list elements in the actual are OK.
-  However, every key and/or element in the pattern must appear in the actual. Anything missing in the 
+  However, every key and/or element in the pattern must appear in the actual. Anything missing in the
   actual is a failure.
 
   List order is significant.
@@ -30,7 +30,7 @@ defmodule Jibe do
   iex> Jibe.match?([], [])
   true
 
-  Hash without nested values. Order of keys should not be important, 
+  Hash without nested values. Order of keys should not be important,
   since hash keys aren't ordered in the first place.
   iex> Jibe.match?(%{"foo" => "bar", "a" => 123}, %{"a" => 123, "foo" => "bar"})
   true
@@ -43,7 +43,7 @@ defmodule Jibe do
   iex> Jibe.match?(%{"foo" => "bar", "a" => 123}, %{"a" => 123})
   false
 
-  # Also works in nested maps. 
+  # Also works in nested maps.
   iex> Jibe.match?(%{foo: :bar, a: %{x: 1, y: 2}}, %{a: %{x: 1}, foo: :bar})
   false
 
@@ -92,7 +92,7 @@ defmodule Jibe do
   iex> Jibe.match?(pattern, actual)
   false
 
-  # Nested data, actual has an extra list element, which is fine. 
+  # Nested data, actual has an extra list element, which is fine.
   iex> pattern = [%{"a" => 1, "b" => [2, 3, %{"x" => [4]}]}, 9, 10]
   iex> actual  = [%{"a" => 1, "b" => [2, 3, %{"x" => [4,5]}]}, 9, 10]
   iex> Jibe.match?(pattern, actual)
@@ -118,7 +118,7 @@ defmodule Jibe do
   iex> Jibe.match?(%{"foo" => :wildcard}, %{"x" => "bar"})
   false
 
-  # :wildcard will match a nil value as long as the key is there. 
+  # :wildcard will match a nil value as long as the key is there.
   iex> Jibe.match?(%{"foo" => :wildcard}, %{"foo" => nil})
   true
 
@@ -144,11 +144,11 @@ defmodule Jibe do
 
   iex> Jibe.match?([Decimal.new(4)], [Decimal.new(4.5)])
   false
-  
+
   """
   def match?(pattern, actual) do
-    result = match(pattern, actual) 
-    
+    result = match(pattern, actual)
+
     if !result do
       Logger.error "\npattern: #{inspect pattern}\n actual: #{inspect actual}"
     end
@@ -157,16 +157,17 @@ defmodule Jibe do
   end
 
   # What are we trying to match?
-  defp match(a, b) when is_map(a), do: match_map(a, b, keys(a))
-  defp match(a, b) when is_list(a), do: match_list(a, b)
+  defp match(a, b) when is_map(a) and is_map(b), do: match_map(a, b, keys(a))
+  defp match(a, b) when is_list(a) and is_list(b), do: match_list(a, b)
 
   # This is probably O(n^2). Use a sorted list if you care at all about performance.
   defp match({:unsorted, a}, b) when is_list(a), do: match_unsorted_list(a, b)
 
+  defp match(_, _), do: false
 
   # For maps, we check each key-value in the pattern to see if there is a cooresponding
-  # key-value in the actual. If a value doesn't match, then the test fails. If we run 
-  # out of keys to check, then the test passes. 
+  # key-value in the actual. If a value doesn't match, then the test fails. If we run
+  # out of keys to check, then the test passes.
   defp match_map(_a, _b, []), do: true
 
   defp match_map(a, b, [k | rest_keys]) when is_map(a) do
@@ -225,7 +226,7 @@ defmodule Jibe do
   def compare(:wildcard, :key_missing), do: false
   def compare(:wildcard, _b), do: true
   def compare(a, b), do: a == b
-  
+
   defp keys(nil), do: []
   defp keys(m) when is_map(m), do: Map.keys(m)
 end

@@ -3,8 +3,8 @@ defmodule JibeTest do
   import ExUnit.CaptureLog
   doctest Jibe
 
-  # Most of the tests are doc tests in jibe.ex. 
-  
+  # Most of the tests are doc tests in jibe.ex.
+
   describe "lists with indifferent order" do
     test "match - flat lists" do
       assert Jibe.match?({:unsorted, [1, 2]}, [3, 2, 1])
@@ -69,6 +69,24 @@ defmodule JibeTest do
       assert capture_log(fn ->
         refute Jibe.match?(pattern, actual)
        end) =~ "actual: %{data: :not_a_list}"
+    end
+  end
+
+  describe "degenerate cases" do
+    test "map compared to list" do
+      refute Jibe.match?(%{}, [])
+    end
+
+    test "list compared to map" do
+      refute Jibe.match?([], %{})
+    end
+
+    test "map compared to nil" do
+      refute Jibe.match?(%{}, nil)
+    end
+
+    test "list compared to nil" do
+      refute Jibe.match?([], nil)
     end
   end
 end

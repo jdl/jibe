@@ -23,7 +23,7 @@ defmodule Jibe.Mixfile do
       links: %{"GitHub" => "https://github.com/jdl/jibe"}
     ]
   end
-  
+
   defp description() do
    "Functions for checking if a nested map/list matches a particular pattern."
   end
@@ -37,6 +37,9 @@ defmodule Jibe.Mixfile do
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
-    [{:decimal, "~> 1.0"}]
+    [
+      {:decimal, "~> 1.0"},
+      {:ex_doc, "~>0.21", only: :dev, runtime: false}
+    ]
   end
 end

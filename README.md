@@ -34,7 +34,7 @@ See the docs for examples using maps, dates, wildcards, and more.
 
 ## What does this look like in a typical unit test?
 
-I made this originally to help test API results in Phoenix apps. If you don't use Phoenix just imagine
+I originally made this to help test API results in Phoenix apps. If you don't use Phoenix just imagine
 that we have a thing that is spewing out JSON, and we'd like to check some or all of our fields. JSON 
 deserialization is external to `Jibe`. Use `Poison` or `Jason` or whatever you want.
 
@@ -94,22 +94,23 @@ defmodule MyAppWeb.UsersControllerTest do
         %{ "id" => wilma.id}
       ]}
     assert Jibe.match?(pattern, data)
+    
+    # Or maybe I only care that "Barney" showed up somewhere in the results, not caring at all about
+    # the rest of the list.
+    pattern = [ %{"id" => barney.id} ]
+    assert Jibe.match?(pattern, data)
+
   end
 ```
 
 ## Installation
-
-Maybe some day I'll get around to versioning this. For now, you can pull it directly
-from github.
 
 The package can be installed by adding `jibe` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:jibe, git: "https://github.com/jdl/jibe.git"}
+    {:jibe, "~> 0.2.0"}
   ]
 end
 ```
-
-

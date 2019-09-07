@@ -24,7 +24,7 @@ defmodule Jibe.Mixfile do
     [
       name: "jibe",
       maintainers: ["jdl"],
-      licences: ["MIT"],
+      licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/jdl/jibe"}
     ]
   end

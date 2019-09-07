@@ -1,6 +1,6 @@
 # Jibe
 
-An elixir library for comparing an arbitralily nested map/list against a pattern.
+An elixir library for comparing an arbitrarily nested map/list against a pattern.
 
 This is intended as a helper in unit tests, but there's nothing forcing that to be
 the case. It's just a simple set of elixir functions that could be called from anywhere. 

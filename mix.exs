@@ -1,17 +1,22 @@
 defmodule Jibe.Mixfile do
   use Mix.Project
 
+  @github "https://github.com/jdl/jibe"
+
   def project do
     [
       app: :jibe,
-      version: "0.1.0",
+      version: "0.2.0",
       elixir: "~> 1.5",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       description: description(),
       package: package(),
-      source_url: "https://github.com/jdl/jibe",
-      deps: deps()
+      licences: ["MIT"],
+      links: %{"github" => @github},
+      source_url: @github,
+      deps: deps(),
+      docs: docs()
     ]
   end
 
@@ -23,9 +28,9 @@ defmodule Jibe.Mixfile do
       links: %{"GitHub" => "https://github.com/jdl/jibe"}
     ]
   end
-  
+
   defp description() do
-   "Functions for checking if a nested map/list matches a particular pattern."
+   "Test tool for checking if a nested map/list matches a particular pattern."
   end
 
   # Run "mix help compile.app" to learn about applications.
@@ -37,6 +42,17 @@ defmodule Jibe.Mixfile do
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
-    [{:decimal, "~> 1.0"}]
+    [
+      {:decimal, "~> 1.0"},
+      {:ex_doc, "~>0.21", only: :dev, runtime: false}
+    ]
+  end
+
+  defp docs do
+    [
+      main: "Jibe",
+      source_url: @github,
+      extras: ["README.md"]
+    ]
   end
 end

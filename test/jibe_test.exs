@@ -1,6 +1,8 @@
 defmodule JibeTest do
   use ExUnit.Case
   import ExUnit.CaptureLog
+  @moduletag capture_log: true
+
   doctest Jibe
 
   # Most of the tests are doc tests in jibe.ex.

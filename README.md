@@ -116,7 +116,7 @@ The package can be installed by adding `jibe` to your list of dependencies in `m
 ```elixir
 def deps do
   [
-    {:jibe, "~> 0.2.0"}
+    {:jibe, "~> 0.2.1"}
   ]
 end
 ```

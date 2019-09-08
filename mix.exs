@@ -43,7 +43,7 @@ defmodule Jibe.Mixfile do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:decimal, "~> 1.0"},
+      {:decimal, "~> 1.8"},
       {:ex_doc, "~>0.21", only: :dev, runtime: false}
     ]
   end

@@ -157,10 +157,10 @@ defmodule Jibe do
   ## Decimal matching
 
       # Decimal values require a special comparison
-      iex> Jibe.match?([Decimal.new(2)], [Decimal.new(2.0)])
+      iex> Jibe.match?([Decimal.new(2)], [Decimal.from_float(2.0)])
       true
 
-      iex> Jibe.match?([Decimal.new(4)], [Decimal.new(4.5)])
+      iex> Jibe.match?([Decimal.new(4)], [Decimal.from_float(4.5)])
       false
 
   """

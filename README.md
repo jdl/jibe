@@ -6,6 +6,12 @@ This is intended as a helper in unit tests, but there's nothing forcing that to 
 the case. It's just a simple set of elixir functions that could be called from anywhere. 
 Having said that, I use it in a lot of tests and pretty much only in tests.
 
+## API Docs
+
+[API docs are here](https://hexdocs.pm/jibe/Jibe.html)
+
+
+
 ## Example
 
 ```elixir

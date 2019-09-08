@@ -147,7 +147,6 @@ defmodule Jibe do
       iex> Jibe.match?(%{d: d1}, %{d: d2})
       true
 
-      # Elixir DateTime requires a special comparison
       iex> {:ok, d1, _} = DateTime.from_iso8601("2018-01-01T12:00:00Z")
       iex> {:ok, d2, _} = DateTime.from_iso8601("2000-01-01T12:00:00Z")
       iex> Jibe.match?([d1], [d2])
@@ -236,6 +235,8 @@ defmodule Jibe do
 
   # patterns like this need to be first, because they are also considered maps
   # by the is_map guard.
+
+  @doc false
   def compare(%DateTime{} = a, %DateTime{} = b), do: DateTime.compare(a, b) == :eq
   def compare(%Decimal{} = a, %Decimal{} = b), do: Decimal.cmp(a, b) == :eq
 

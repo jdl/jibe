@@ -111,6 +111,29 @@ defmodule Jibe do
       iex> Jibe.match?(pattern, actual)
       true
 
+  ## Tuples
+
+      They're converted to lists insternally, so the same rules apply.
+
+      iex> pattern = {1, 2}
+      iex> actual = {1, 2}
+      iex> Jibe.match?(pattern, actual)
+      true
+
+      iex> pattern = {1, 2}
+      iex> actual = {1, 2, 3}
+      iex> Jibe.match?(pattern, actual)
+      true
+
+      iex> pattern = {1, 2}
+      iex> actual = {1}
+      iex> Jibe.match?(pattern, actual)
+      false
+
+      iex> pattern = [{1, 2}, {3, 4}]
+      iex> actual = [{1, 2, 3}, {3, 5, 4}]
+      iex> Jibe.match?(pattern, actual)
+      true
 
   ## Unsorted lists
 
@@ -176,6 +199,9 @@ defmodule Jibe do
   # What are we trying to match?
   defp match(a, b) when is_map(a) and is_map(b), do: match_map(a, b, keys(a))
   defp match(a, b) when is_list(a) and is_list(b), do: match_list(a, b)
+  defp match(a, b) when is_tuple(a) and is_tuple(b) do
+    match_list(Tuple.to_list(a), Tuple.to_list(b))
+  end
 
   # This is probably O(n^2). Use a sorted list if you care at all about performance.
   defp match({:unsorted, a}, b) when is_list(a), do: match_unsorted_list(a, b)
@@ -242,6 +268,7 @@ defmodule Jibe do
 
   def compare(a, b) when is_map(a)  and is_map(b),  do: match(a, b)
   def compare(a, b) when is_list(a) and is_list(b), do: match(a, b)
+  def compare(a, b) when is_tuple(a) and is_tuple(b), do: match(a, b)
   def compare({:unsorted, a}, b) when is_list(a) and is_list(b), do: match({:unsorted, a}, b)
   def compare(:wildcard, :key_missing), do: false
   def compare(:wildcard, _b), do: true

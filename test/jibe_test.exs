@@ -18,17 +18,9 @@ defmodule JibeTest do
     end
 
     test "no match - flat lists, missing element" do
-      assert capture_log(fn ->
-        refute Jibe.match?({:unsorted, [1, 2]}, [3, 1])
-      end) =~ "Missing the following expected element: 2"
-
-      assert capture_log(fn ->
-        refute Jibe.match?({:unsorted, [1, 2]}, [1])
-      end) =~ "Missing the following expected element: 2"
-
-      assert capture_log(fn ->
-        refute Jibe.match?({:unsorted, [1, 2]}, [])
-      end) =~ "Missing the following expected element: 1"
+      refute Jibe.match?({:unsorted, [1, 2]}, [3, 1])
+      refute Jibe.match?({:unsorted, [1, 2]}, [1])
+      refute Jibe.match?({:unsorted, [1, 2]}, [])
     end
 
     test "match - nested lists" do
@@ -40,9 +32,7 @@ defmodule JibeTest do
     test "no match - nested lists with inner sorted list" do
       pattern = {:unsorted, [1, [2, 3]]}
       actual  =             [[3, 2], 1, 4]
-      assert capture_log(fn ->
-        refute Jibe.match?(pattern, actual)
-      end) =~ "Missing the following expected element: [2, 3]"
+      refute Jibe.match?(pattern, actual)
     end
 
     test "match - nested lists with inner unsorted list" do
@@ -60,9 +50,7 @@ defmodule JibeTest do
     test "no match - nested lists and maps with unsorted mixed in" do
       pattern = %{data: {:unsorted, [:a, :b]}, meta: [:x, :y]}
       actual  = %{data:             [:b, :a],  meta: [:y, :x], extra_key: :v}
-      assert capture_log(fn ->
-        refute Jibe.match?(pattern, actual)
-      end) =~ "Missing the following expected elements: [:y]"
+      refute Jibe.match?(pattern, actual)
     end
 
     test "no match - looking for nested unsorted list, but actual is wront type" do

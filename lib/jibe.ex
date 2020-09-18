@@ -233,7 +233,7 @@ defmodule Jibe do
   # Still pieces of the pattern left to find, but we've run out of actual list
   # elements. This is a failure.
   defp match_list([_|_] = a, []) do
-    Logger.error "\nMissing the following expected elements: #{inspect a}"
+    # Logger.error "\nMissing the following expected elements: #{inspect a}"
     false
   end
 
@@ -252,7 +252,6 @@ defmodule Jibe do
   defp match_unsorted_list([a | rest_a], b) do
     case Enum.find_index(b, &(compare(a, &1))) do
       nil ->
-        Logger.error("\nMissing the following expected element: #{inspect a}")
         false
       index ->
         match_unsorted_list(rest_a, List.delete_at(b, index))

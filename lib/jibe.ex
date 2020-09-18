@@ -232,8 +232,7 @@ defmodule Jibe do
 
   # Still pieces of the pattern left to find, but we've run out of actual list
   # elements. This is a failure.
-  defp match_list([_|_] = a, []) do
-    # Logger.error "\nMissing the following expected elements: #{inspect a}"
+  defp match_list([_|_], []) do
     false
   end
 

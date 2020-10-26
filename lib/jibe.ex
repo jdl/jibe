@@ -142,6 +142,22 @@ defmodule Jibe do
       iex> Jibe.match?({:unsorted, [1, 2]}, [2, 1])
       true
 
+      iex> Jibe.match?({:unsorted, [1, 2, 3]}, [2, 1])
+      false
+
+  ## Empty lists
+
+    Sometimes you want to check for a literal empty list `[]`. Because extra elements are OK by default,
+    if you put [] into a pattern it will match any list, not just an empty one.
+
+    iex> Jibe.match?(:empty_list, [])
+    true
+
+    iex> Jibe.match?(:empty_list, [1])
+    false
+
+    iex> Jibe.match?(%{foo: :empty_list}, %{foo: []})
+    true
 
   ## Wildcard matches
 
@@ -205,6 +221,8 @@ defmodule Jibe do
 
   # This is probably O(n^2). Use a sorted list if you care at all about performance.
   defp match({:unsorted, a}, b) when is_list(a), do: match_unsorted_list(a, b)
+
+  defp match(:empty_list, b) when is_list(b) and b == [], do: true
 
   defp match(_, _), do: false
 
@@ -270,6 +288,7 @@ defmodule Jibe do
   def compare({:unsorted, a}, b) when is_list(a) and is_list(b), do: match({:unsorted, a}, b)
   def compare(:wildcard, :key_missing), do: false
   def compare(:wildcard, _b), do: true
+  def compare(:empty_list, b) when is_list(b) and b == [], do: true
   def compare(a, b), do: a == b
 
   defp keys(nil), do: []

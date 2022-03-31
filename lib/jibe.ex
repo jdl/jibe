@@ -280,7 +280,7 @@ defmodule Jibe do
 
   @doc false
   def compare(%DateTime{} = a, %DateTime{} = b), do: DateTime.compare(a, b) == :eq
-  def compare(%Decimal{} = a, %Decimal{} = b), do: Decimal.cmp(a, b) == :eq
+  def compare(%Decimal{} = a, %Decimal{} = b), do: Decimal.compare(a, b) == :eq
 
   def compare(a, b) when is_map(a)  and is_map(b),  do: match(a, b)
   def compare(a, b) when is_list(a) and is_list(b), do: match(a, b)

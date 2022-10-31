@@ -6,7 +6,7 @@ defmodule Jibe.Mixfile do
   def project do
     [
       app: :jibe,
-      version: "0.2.5",
+      version: "0.3.0",
       elixir: "~> 1.8",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,

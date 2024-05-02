@@ -235,6 +235,7 @@ defmodule Jibe do
     if compare(Map.get(a, k), Map.get(b, k, :key_missing)) do
       match_map(a, b, rest_keys)
     else
+      Logger.error "\nMap failed matching key: #{inspect k}, a:#{inspect a}, b:#{inspect b}"
       false
     end
   end

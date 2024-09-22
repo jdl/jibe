@@ -47,6 +47,12 @@ defmodule JibeTest do
       assert Jibe.match?(pattern, actual)
     end
 
+    test "match - unsorted list of maps" do
+      pattern = {:unsorted, [ %{id: 1}, %{id: 2} ]}
+      actual  = [ %{id: 2}, %{id: 1} ]
+      assert Jibe.match?(pattern, actual)
+    end
+
     test "no match - nested lists and maps with unsorted mixed in" do
       pattern = %{data: {:unsorted, [:a, :b]}, meta: [:x, :y]}
       actual  = %{data:             [:b, :a],  meta: [:y, :x], extra_key: :v}
